@@ -1,0 +1,61 @@
+scalar Timestamp
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  author: User!
+  createdAt: Timestamp!
+  allowComments: Boolean!
+  comments(limit: Int, offset: Int): [Comment!]
+}
+
+type Comment {
+  id: ID!
+  postID: ID!
+  text: String!
+  author: User!
+  replyTo: Comment
+  createdAt: Timestamp!
+  replies: [Comment]
+}
+
+input CreatePost {
+  title: String!
+  content: String!
+  author_id: ID!
+  allowComments: Boolean!
+}
+
+input CreateComment {
+  text: String!
+  author_id: ID!
+  post_id: ID!
+  replyTo: ID
+}
+
+type Query {
+  getPosts(limit: Int = 25, offset: Int = 0): [Post!]!
+  getPostByID(id: Int!): Post!
+  getComments(limit: Int = 25, offset: Int = 0): [Comment!]!
+}
+
+type Mutation {
+  createPost(input: CreatePost!): Post!
+  createComment(input: CreateComment!): Comment!
+}
+
+type Subscription {
+  commentAdded(postId: ID!): Comment!
+}
